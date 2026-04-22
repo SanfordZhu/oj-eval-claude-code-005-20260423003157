@@ -105,17 +105,17 @@ bool QoiEncode(uint32_t width, uint32_t height, uint8_t channels, uint8_t colors
                 history[index_pos][3] = a;
 
                 // Calculate differences
-                int dr = r - pre_r;
-                int dg = g - pre_g;
-                int db = b - pre_b;
-                int da = a - pre_a;
+                int dr = (int)r - (int)pre_r;
+                int dg = (int)g - (int)pre_g;
+                int db = (int)b - (int)pre_b;
+                int da = (int)a - (int)pre_a;
 
                 // Try diff encoding
                 if (dr >= -2 && dr <= 1 && dg >= -2 && dg <= 1 && db >= -2 && db <= 1 && da == 0) {
                     QoiWriteU8(QOI_OP_DIFF_TAG | ((dr + 2) << 4) | ((dg + 2) << 2) | (db + 2));
                 } else {
                     // Try luma encoding
-                    int dg_luma = g - pre_g;
+                    int dg_luma = (int)g - (int)pre_g;
                     int dr_dg = dr - dg_luma;
                     int db_dg = db - dg_luma;
 
@@ -217,9 +217,9 @@ bool QoiDecode(uint32_t &width, uint32_t &height, uint8_t &channels, uint8_t &co
             int dr = ((byte1 >> 4) & 0x03) - 2;
             int dg = ((byte1 >> 2) & 0x03) - 2;
             int db = (byte1 & 0x03) - 2;
-            r = px[0] + dr;
-            g = px[1] + dg;
-            b = px[2] + db;
+            r = (uint8_t)((int)px[0] + dr);
+            g = (uint8_t)((int)px[1] + dg);
+            b = (uint8_t)((int)px[2] + db);
             a = px[3];
         } else if ((byte1 & QOI_MASK_2) == QOI_OP_LUMA_TAG) {
             // LUMA chunk
@@ -229,9 +229,9 @@ bool QoiDecode(uint32_t &width, uint32_t &height, uint8_t &channels, uint8_t &co
             int db_dg = (byte2 & 0x0f) - 8;
             int dr = dr_dg + dg;
             int db = db_dg + dg;
-            r = px[0] + dr;
-            g = px[1] + dg;
-            b = px[2] + db;
+            r = (uint8_t)((int)px[0] + dr);
+            g = (uint8_t)((int)px[1] + dg);
+            b = (uint8_t)((int)px[2] + db);
             a = px[3];
         } else if ((byte1 & QOI_MASK_2) == QOI_OP_RUN_TAG) {
             // RUN chunk
